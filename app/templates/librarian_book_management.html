@@ -1,0 +1,108 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Manage Books - BookHub</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <style>
+        :root {
+            --bg-dark: #121826;
+            --card-bg: rgba(18, 24, 38, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --primary-accent: #6A82FB;
+            --secondary-accent: #FC5C7D;
+            --text-light: #F0F8FF;
+            /* --text-muted: #a9b3c9; */
+        }
+        body { background-color: var(--bg-dark); color: var(--text-light); font-family: 'Poppins', sans-serif; }
+        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        
+        .navbar { background-color: rgba(18, 24, 38, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); }
+        .page-header { padding: 8rem 0 3rem; text-align: center; }
+        .page-header h1 { font-weight: 700; font-size: 2.8rem; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .container { position: relative; z-index: 1; }
+
+        .section-card {
+            background-color: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 16px;
+            padding: 2.5rem; backdrop-filter: blur(12px); box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        .btn-gradient { background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); border: none; color: white; transition: all 0.3s ease; }
+        .btn-gradient:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        
+        .table { --bs-table-bg: transparent; --bs-table-color: var(--text-light); --bs-table-border-color: var(--border-glass); --bs-table-hover-bg: rgba(255, 255, 255, 0.07); }
+        .table thead th { color: var(--text-light); font-weight: 500; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.5px; }
+        .table td { vertical-align: middle; }
+        .table .book-title { font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fs-4" href="{% url 'home' %}"><i class="fas fa-book-open-reader me-2"></i>BookHub</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'librarian_dashboard' %}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'librarian_book_management' %}">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'librarian_member_management' %}">Members</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'librarian_reports' %}">Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <header class="page-header" data-aos="fade-in">
+            <h1>Book Management</h1>
+            <p class="lead text-light">Add, edit, and manage the entire library catalog.</p>
+            <a href="{% url 'librarian_add_book' %}" class="btn btn-gradient mt-3 px-4 py-2"><i class="fas fa-plus me-2"></i>Add New Book</a>
+        </header>
+
+        <section class="section-card" data-aos="fade-up" data-aos-delay="200">
+            {% if messages %}<div class="messages mb-3">{% for message in messages %}<div class="alert alert-success">{{ message }}</div>{% endfor %}</div>{% endif %}
+            
+            {% if books %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead><tr><th>Title</th><th>Author</th><th class="text-center">Available</th><th class="text-center">Total</th><th class="text-end">Actions</th></tr></thead>
+                    <tbody>
+                        {% for book in books %}
+                        <tr>
+                            <td class="book-title">{{ book.title }}</td>
+                            <td>{{ book.author|default:'N/A' }}</td>
+                            <td class="text-center">{{ book.copies_available }}</td>
+                            <td class="text-center">{{ book.total_copies }}</td>
+                            <td class="text-end">
+                                <a href="{% url 'librarian_edit_book' book.id %}" class="btn btn-sm btn-outline-primary">Edit</a>
+                                <a href="{% url 'librarian_delete_book' book.id %}" class="btn btn-sm btn-outline-danger ms-1">Delete</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-center text-light m-0">No books found in the catalog. Add one to get started!</p>
+            {% endif %}
+        </section>
+    </main>
+    
+    <footer class="py-4 mt-auto"><div class="container text-center"><p class="mb-0 text-light">© 2025 BookHub. All rights reserved.</p></div></footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@1.41.4/tsparticles.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true, offset: 50 });
+        tsParticles.load("particles-js", {"interactivity":{"events":{"onHover":{"enable":true,"mode":"grab"},"resize":true},"modes":{"grab":{"distance":150,"links":{"opacity":1}}}},"particles":{"color":{"value":"#a9b3c9"},"links":{"color":"#a9b3c9","distance":150,"enable":true,"opacity":0.2,"width":1},"move":{"direction":"none","enable":true,"outMode":"bounce","random":true,"speed":0.5,"straight":false},"number":{"density":{"enable":true,"value_area":800},"value":40},"opacity":{"value":0.2},"shape":{"type":"circle"},"size":{"random":true,"value":2}},"detectRetina":true});
+    </script>
+</body>
+</html>

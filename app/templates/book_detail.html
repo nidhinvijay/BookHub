@@ -1,0 +1,173 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title|default:"Book Details" }} - BookHub</title>
+
+    <!-- Fonts, Icons, and Animations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <style>
+        :root {
+            --bg-dark: #121826;
+            --bg-glass: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --primary-accent: #6a82fb;
+            --secondary-accent: #fc5c7d;
+            --text-light: #f0f8ff;
+            --text-muted: #a9b3c9;
+        }
+        body { background-color: var(--bg-dark); color: var(--text-light); font-family: 'Poppins', sans-serif; }
+        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        
+        /* Navbar Styles */
+        .navbar { background-color: rgba(18, 24, 38, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); }
+        .navbar-brand { font-weight: 700; color: var(--text-light) !important; }
+        .nav-link { color: var(--text-muted) !important; font-weight: 400; }
+        .nav-link:hover, .nav-link.active { color: var(--text-light) !important; }
+        .btn-register { border-color: var(--primary-accent); color: var(--primary-accent); transition: all 0.3s ease; }
+        .btn-register:hover { background-color: var(--primary-accent); color: var(--text-light); }
+        .btn-login { background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); border: none; color: white; transition: transform 0.3s ease; }
+        .btn-login:hover { transform: translateY(-2px); color: white; }
+        .btn-gradient { background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); border: none; color: white; }
+
+        /* Detail Page Specific Styles */
+        .book-detail-section { padding: 8rem 0; min-height: 100vh; display: flex; align-items: center; }
+        
+        /* --- NEW: Glass Image Frame --- */
+        .book-cover-frame {
+            background: var(--bg-glass);
+            border: 1px solid var(--border-glass);
+            border-radius: 18px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            transition: transform 0.4s ease;
+            transform-style: preserve-3d;
+        }
+        .book-cover {
+            max-width: 100%; height: auto; border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+            transform: translateZ(20px); /* Lift the image off the frame */
+        }
+        .book-cover-frame:hover {
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.05);
+        }
+        .book-cover-frame:hover .book-cover {
+            transform: translateZ(40px) scale(1.02); /* Enhance 3D effect on hover */
+        }
+        /* --- END: Glass Image Frame --- */
+        
+        .book-title {
+            font-weight: 700; font-size: 3rem; line-height: 1.2;
+            background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
+            -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .book-author { font-size: 1.25rem; color: var(--text-muted); font-weight: 400; margin-bottom: 1.5rem; }
+        .book-description { color: var(--text-muted); line-height: 1.8; margin-bottom: 2rem; font-size: 0.95rem; }
+        
+        .detail-item { margin-bottom: 0.75rem; font-size: 0.9rem; color: var(--text-muted); }
+        .detail-item strong { color: var(--text-light); font-weight: 500; min-width: 120px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <!-- Consistent Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fs-4" href="{% url 'home' %}"><i class="fas fa-book-open-reader me-2"></i>BookHub</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto mb-2 mb-lg-0"></ul>
+                <div class="ms-lg-3 mt-3 mt-lg-0">
+                    {% if request.session.user_id %}
+                        <a href="{% url 'logout' %}" class="btn btn-register">Logout</a>
+                        <a href="{% if request.session.user_type == 'member' %}{% url 'userpage' %}{% else %}{% url 'librarian_dashboard' %}{% endif %}" class="btn btn-login">My Dashboard</a>
+                    {% else %}
+                        <a style="padding-left: 1.65rem;padding-right: 1.65rem;margin-right: .2rem;" href="{% url 'login' %}?next={{ request.path }}" class="btn btn-login">Login</a>
+                        <a style="padding-left: 1.65rem;padding-right: 1.65rem;" href="{% url 'register' %}" class="btn btn-register">Register</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="book-detail-section">
+        <div class="container">
+            {% if messages %}<div class="row justify-content-center mb-4"><div class="col-lg-8">{% for message in messages %}<div class="alert alert-{{ message.tags|default:'info' }}">{{ message }}</div>{% endfor %}</div></div>{% endif %}
+            
+            {% if book %}
+            <div class="row align-items-center g-5">
+                <div class="col-lg-5 text-center" data-aos="fade-right" data-aos-duration="1000">
+                    <!-- NEW: Glass Frame Wrapper -->
+                    <div class="book-cover-frame">
+                        <img src="{{ book.image_url }}" class="book-cover" alt="Cover for {{ book.title }}">
+                    </div>
+                </div>
+                <div class="col-lg-7" data-aos="fade-left" data-aos-duration="1000" data-aos-delay="200">
+                    <h1 class="book-title">{{ book.title }}</h1>
+                    <h3 class="book-author">by {{ book.authors|join:", "|default:"Unknown Author" }}</h3>
+                    <p class="book-description">{{ book.description|safe|linebreaksbr }}</p>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6 detail-item"><strong>Publisher:</strong> <span>{{ book.publisher }}</span></div>
+                        <div class="col-md-6 detail-item"><strong>Published:</strong> <span>{{ book.published_date }}</span></div>
+                    </div>
+
+                    <div class="d-flex align-items-center gap-3 mt-4">
+                        {% if member %}
+                            <form method="post">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-gradient" {% if existing_request_or_payment_pending %}disabled{% endif %}>
+                                    {% if existing_request_or_payment_pending %}<i class="fas fa-hourglass-half me-2"></i>Request Pending{% else %}<i class="fas fa-shopping-cart me-2"></i>Request to Buy{% endif %}
+                                </button>
+                            </form>
+                        {% elif request.session.user_type == 'librarian' %}
+                            <p class="text-muted fst-italic">Librarian view: manage requests from your dashboard.</p>
+                        {% else %}
+                            <a href="{% url 'login' %}?next={{ request.path }}" class="btn btn-gradient"><i class="fas fa-sign-in-alt me-2"></i>Login to Request</a>
+                        {% endif %}
+                    </div>
+                    {% if existing_request_or_payment_pending %}
+                        <p class="text-muted mt-3 small">You have an active request for this book. Check your dashboard for status updates.</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+            <div class="text-center py-5 w-100"><i class="fas fa-exclamation-triangle fa-4x text-muted mb-3"></i><h3 class="text-light">Book Not Found</h3><p class="text-muted">We couldn't retrieve the details for this book.</p><a href="{% url 'browse_books' %}" class="btn btn-gradient mt-3">Back to Browse</a></div>
+            {% endif %}
+        </div>
+    </main>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@1.41.4/tsparticles.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true, offset: 50 });
+
+        // NEW: Homepage particle configuration
+        tsParticles.load("particles-js", {
+            interactivity: {
+                events: { onHover: { enable: true, mode: "grab" }, resize: true },
+                modes: { grab: { distance: 150, links: { opacity: 1 } } }
+            },
+            particles: {
+                color: { value: "#a9b3c9" },
+                links: { color: "#a9b3c9", distance: 150, enable: true, opacity: 0.2, width: 1 },
+                move: { direction: "none", enable: true, outMode: "bounce", random: true, speed: 0.5, straight: false },
+                number: { density: { enable: true, value_area: 800 }, value: 40 },
+                opacity: { value: 0.2 },
+                shape: { type: "circle" },
+                size: { random: true, value: 2 },
+            },
+            detectRetina: true,
+        });
+    </script>
+</body>
+</html>

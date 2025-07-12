@@ -1,0 +1,112 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reports & Analytics - BookHub</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <style>
+        :root {
+            --bg-dark: #121826;
+            --card-bg: rgba(18, 24, 38, 0.75);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --primary-accent: #6A82FB;
+            --secondary-accent: #FC5C7D;
+            --text-light: #F0F8FF;
+            --text-muted: #a9b3c9;
+        }
+        body { background-color: var(--bg-dark); color: var(--text-light); font-family: 'Poppins', sans-serif; }
+        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        
+        .navbar { background-color: rgba(18, 24, 38, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); }
+        .page-header { padding: 8rem 0 3rem; text-align: center; }
+        .page-header h1 { font-weight: 700; font-size: 2.8rem; background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .container { position: relative; z-index: 1; }
+
+        .section-card {
+            background-color: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 16px;
+            padding: 2rem; backdrop-filter: blur(12px); box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            height: 100%;
+        }
+        .metric-card {
+            transition: transform 0.3s ease-out, background 0.3s ease;
+            transform-style: preserve-3d;
+        }
+        .metric-card:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            transform: perspective(1000px) rotateX(5deg) rotateY(-5deg) scale(1.05);
+        }
+        .section-card-title { font-size: 1rem; font-weight: 500; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 0.5rem; }
+        .metric-value { font-size: 2.5rem; font-weight: 700; color: var(--text-light); }
+        .chart-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand fs-4" href="{% url 'home' %}"><i class="fas fa-book-open-reader me-2"></i>BookHub</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link" href="{% url 'librarian_dashboard' %}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'librarian_book_management' %}">Books</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'librarian_member_management' %}">Members</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="{% url 'librarian_reports' %}">Reports</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="container">
+        <header class="page-header" data-aos="fade-in">
+            <h1>Reports & Analytics</h1>
+            <p class="lead text-muted">Visual insights into your library's performance.</p>
+        </header>
+
+        <!-- Key Metrics -->
+        <div class="row g-4 mb-5">
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200"><div class="section-card metric-card text-center"><h3 class="section-card-title">Total Revenue</h3><p class="metric-value">₹{{ total_revenue_inr|floatformat:2 }}</p></div></div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300"><div class="section-card metric-card text-center"><h3 class="section-card-title">Active Members</h3><p class="metric-value">{{ active_members_count }}</p></div></div>
+            <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400"><div class="section-card metric-card text-center"><h3 class="section-card-title">Total Members</h3><p class="metric-value">{{ total_members_count }}</p></div></div>
+        </div>
+
+        <!-- Charts -->
+        <div class="row g-4">
+            <div class="col-lg-7" data-aos="fade-up" data-aos-delay="500">
+                <section class="section-card"><h2 class="chart-title text-center">Top 5 Purchased Books</h2><canvas id="topBooksChart"></canvas></section>
+            </div>
+            <div class="col-lg-5" data-aos="fade-up" data-aos-delay="600">
+                <section class="section-card"><h2 class="chart-title text-center">Transaction Status</h2><canvas id="transactionStatusChart"></canvas></section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-4 mt-5"><div class="container text-center"><p class="mb-0 text-muted">© 2025 BookHub. All rights reserved.</p></div></footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@1.41.4/tsparticles.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        AOS.init({ duration: 800, once: true, offset: 50 });
+        tsParticles.load("particles-js", {"interactivity":{"events":{"onHover":{"enable":true,"mode":"grab"},"resize":true},"modes":{"grab":{"distance":150,"links":{"opacity":1}}}},"particles":{"color":{"value":"#a9b3c9"},"links":{"color":"#a9b3c9","distance":150,"enable":true,"opacity":0.2,"width":1},"move":{"direction":"none","enable":true,"outMode":"bounce","random":true,"speed":0.5,"straight":false},"number":{"density":{"enable":true,"value_area":800},"value":40},"opacity":{"value":0.2},"shape":{"type":"circle"},"size":{"random":true,"value":2}},"detectRetina":true});
+        
+        Chart.defaults.color = 'rgba(240, 248, 255, 0.7)';
+        Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+        Chart.defaults.font.family = "'Poppins', sans-serif";
+
+        const statusCtx = document.getElementById('transactionStatusChart').getContext('2d');
+        new Chart(statusCtx, { type: 'doughnut', data: { labels: {{ transaction_status_labels|safe }}, datasets: [{ data: {{ transaction_status_counts|safe }}, backgroundColor: {{ transaction_status_colors|safe }}, borderWidth: 0, hoverOffset: 8, hoverBorderColor: '#fff' }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom', labels: { padding: 20 } } } } });
+
+        const booksCtx = document.getElementById('topBooksChart').getContext('2d');
+        new Chart(booksCtx, { type: 'bar', data: { labels: {{ top_book_titles|safe }}, datasets: [{ label: 'Purchases', data: {{ top_book_counts|safe }}, backgroundColor: 'rgba(106, 130, 251, 0.6)', borderColor: '#6A82FB', borderWidth: 2, borderRadius: 5 }] }, options: { indexAxis: 'y', responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, grid: { drawOnChartArea: false } }, y: { grid: { color: 'rgba(255, 255, 255, 0.05)' } } } } });
+    </script>
+</body>
+</html>
