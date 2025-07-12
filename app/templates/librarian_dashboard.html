@@ -289,6 +289,7 @@
                         method="post"
                         class="d-inline"
                       >
+                      {% csrf_token %}
                         <button type="submit" class="btn btn-sm btn-success">
                           Approve
                         </button>
@@ -298,6 +299,7 @@
                         method="post"
                         class="d-inline"
                       >
+                      {% csrf_token %}
                         <button type="submit" class="btn btn-sm btn-danger">
                           Reject
                         </button>
