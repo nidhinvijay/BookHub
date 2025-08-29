@@ -1,0 +1,705 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookHub - Your Digital Library Gateway</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+
+    <!-- Animation Libraries CSS -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swiper/swiper-bundle.min.css"
+    />
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+
+    <style>
+      :root {
+        --bg-dark: #121826;
+        --bg-light-glass: rgba(255, 255, 255, 0.05);
+        --border-glass: rgba(255, 255, 255, 0.1);
+        --primary-accent: #6a82fb;
+        --secondary-accent: #fc5c7d;
+        --text-light: #f0f8ff;
+        --text-muted: #a9b3c9;
+      }
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        font-family: "Poppins", sans-serif;
+        overflow-x: hidden;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid var(--border-glass);
+      }
+      .navbar {
+        background-color: transparent;
+        transition: background-color 0.4s ease;
+        padding: 1rem 0;
+      }
+      .navbar.scrolled {
+        background-color: rgba(18, 24, 38, 0.85);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-glass);
+      }
+      .navbar-brand {
+        font-weight: 700;
+        color: var(--text-light) !important;
+      }
+      .nav-link {
+        color: var(--text-muted) !important;
+        font-weight: 400;
+        transition: color 0.3s;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        color: var(--text-light) !important;
+      }
+      .btn-register {
+        border-color: var(--primary-accent);
+        color: var(--primary-accent);
+        transition: all 0.3s ease;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+      .btn-register:hover {
+        background-color: var(--primary-accent);
+        color: var(--text-light);
+        box-shadow: 0 0 15px rgba(106, 130, 251, 0.5);
+      }
+      .btn-login {
+        background: linear-gradient(
+          90deg,
+          var(--primary-accent),
+          var(--secondary-accent)
+        );
+        border: none;
+        color: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+        margin-right: 0.2rem;
+      }
+      .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(106, 130, 251, 0.4);
+      }
+
+      /* Hero Section */
+      #hero {
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        text-align: center;
+        position: relative;
+      }
+      #particles-js {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+      }
+      .hero-content {
+        position: relative;
+        z-index: 1;
+      }
+      .hero-content h1 {
+        font-size: 4.5rem;
+        font-weight: 700;
+        background: linear-gradient(
+          90deg,
+          var(--primary-accent),
+          var(--secondary-accent)
+        );
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
+      .hero-content p {
+        font-size: 1.25rem;
+        color: var(--text-muted);
+        max-width: 600px;
+        margin: 1.5rem auto 2.5rem;
+      }
+      .hero-cta {
+        font-size: 1.1rem;
+        font-weight: 600;
+        padding: 0.8rem 2.5rem;
+        border-radius: 50px;
+        background: linear-gradient(
+          90deg,
+          var(--primary-accent),
+          var(--secondary-accent)
+        );
+        color: var(--text-light);
+        border: none;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .hero-cta:hover {
+        transform: translateY(-5px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(252, 92, 125, 0.4);
+      }
+
+      .section {
+        padding: 100px 0;
+        position: relative;
+      }
+      .section-title {
+        text-align: center;
+        font-weight: 700;
+        font-size: 2.8rem;
+        margin-bottom: 60px;
+      }
+
+      /* Features Section (3D Tilt) */
+      .feature-card {
+        background: var(--bg-light-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.2s ease-out, background-color 0.3s ease;
+        transform-style: preserve-3d;
+      }
+      .feature-card h5,
+      .feature-card p,
+      .feature-card i {
+        transform: translateZ(20px);
+      }
+      .feature-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-accent);
+      }
+
+      /* Explore Section (Parallax) */
+      #explore {
+        background-image: linear-gradient(
+            rgba(18, 24, 38, 0.88),
+            rgba(18, 24, 38, 0.88)
+          ),
+          url("https://images.unsplash.com/photo-1532012197267-da84d127e765?auto=format&fit=crop&w=1400&q=80");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: #fff;
+      }
+      #explore .section-title {
+        color: #fff;
+      }
+      .search-form-explore .form-control {
+        height: 55px;
+        border-radius: 50px;
+        padding-left: 50px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        color: #fff;
+      }
+      .search-form-explore .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .search-form-explore .search-icon {
+        position: absolute;
+        left: 20px;
+        top: 18px;
+        color: rgba(255, 255, 255, 0.6);
+      }
+      .category-bubbles .bubble {
+        display: inline-block;
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        padding: 10px 20px;
+        border-radius: 50px;
+        margin: 5px;
+        text-decoration: none;
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      }
+      .category-bubbles .bubble:hover {
+        background: var(--primary-accent);
+        transform: scale(1.1);
+      }
+
+      /* Discover Carousel Section */
+      #discover .swiper-container {
+        width: 100%;
+        padding: 50px 0;
+      }
+      .swiper-slide {
+        width: 220px;
+        height: 330px;
+        box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3);
+        border-radius: 12px;
+        transition: transform 0.4s ease;
+      }
+      .swiper-slide a {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      .swiper-slide-active {
+        transform: scale(1.1);
+      }
+      .swiper-slide img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 12px;
+      }
+      .swiper-button-next,
+      .swiper-button-prev {
+        color: var(--primary-accent);
+      }
+
+      /* --- REFINED Contact Section --- */
+      #contact .contact-container {
+        max-width: 900px; /* Reduced max-width for a more compact feel */
+        margin: auto;
+      }
+      #contact .contact-info-box {
+        background: linear-gradient(
+          135deg,
+          var(--primary-accent),
+          var(--secondary-accent)
+        );
+        padding: 2.5rem; /* Adjusted padding */
+        color: #fff;
+        border-radius: 18px 0 0 18px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      #contact .contact-form-wrapper {
+        padding: 2.5rem; /* Adjusted padding */
+      }
+      #contact .contact-info-box h4 {
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+      }
+      #contact .contact-info-box p {
+        opacity: 0.9;
+        margin-bottom: 1rem;
+      }
+      #contact .contact-info-box .icon {
+        font-size: 1.1rem;
+        width: 25px;
+        text-align: center;
+      }
+      #contact .form-control {
+        background-color: var(--bg-light-glass);
+        border: 1px solid var(--border-glass);
+        border-radius: 8px;
+        color: var(--text-light);
+        padding: 0.75rem 1rem;
+      }
+      #contact .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 0 0.25rem rgba(106, 130, 251, 0.25);
+        border-color: var(--primary-accent);
+      }
+      #contact .form-control::placeholder {
+        color: var(--text-muted);
+      }
+      #contact .btn-submit {
+        background: linear-gradient(
+          90deg,
+          var(--primary-accent),
+          var(--secondary-accent)
+        );
+        border: none;
+        font-weight: 600;
+        padding: 0.75rem 1.5rem;
+      }
+      @media (max-width: 991.98px) {
+        #contact .contact-info-box {
+          border-radius: 18px 18px 0 0;
+        }
+        #contact .contact-form-wrapper {
+          border-radius: 0 0 18px 18px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+      <div class="container">
+        <a class="navbar-brand fs-4" href="#"
+          ><i class="fas fa-book-open-reader me-2"></i>BookHub</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item"><a class="nav-link" href="#hero">Home</a></li>
+            <li class="nav-item">
+              <a class="nav-link" href="#features">Features</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#discover">Discover</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#explore">Explore</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contact">Contact</a>
+            </li>
+          </ul>
+          <div class="ms-lg-3 mt-3 mt-lg-0">
+            <a href="{% url 'login' %}" class="btn btn-login">Login</a>
+            <a href="{% url 'register' %}" class="btn btn-register">Register</a>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero">
+      <div id="particles-js"></div>
+      <div class="container">
+        <div class="hero-content" data-aos="fade-in">
+          <h1>Dive Into Your Next Adventure.</h1>
+          <p>
+            BookHub is the modern gateway to manage, discover, and purchase
+            books from a vast digital library. Seamlessly integrated for both
+            librarians and book lovers.
+          </p>
+          <a href="#explore" class="btn hero-cta">Start Exploring</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="section">
+      <div class="container">
+        <h2 class="section-title text-light" data-aos="fade-up">
+          Why Choose BookHub?
+        </h2>
+        <div class="row g-4">
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="feature-card h-100">
+              <i class="fas fa-tasks feature-icon"></i>
+              <h5>Effortless Management</h5>
+              <p>
+                Librarians get powerful tools to manage the catalog, handle
+                requests, and view analytics with ease.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="200">
+            <div class="feature-card h-100">
+              <i class="fas fa-rocket feature-icon"></i>
+              <h5>Seamless Experience</h5>
+              <p>
+                Members enjoy a fast, modern interface to browse, discover, and
+                securely purchase books.
+              </p>
+            </div>
+          </div>
+          <div class="col-lg-4" data-aos="fade-up" data-aos-delay="300">
+            <div class="feature-card h-100">
+              <i class="fas fa-shield-alt feature-icon"></i>
+              <h5>Secure & Integrated</h5>
+              <p>
+                Powered by Django and integrated with Razorpay for secure
+                payments and peace of mind.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Explore Our Collection Section -->
+    <section id="explore" class="section">
+      <div class="container">
+        <h2 class="section-title" data-aos="fade-up">Explore Our Collection</h2>
+        <div data-aos="fade-up" data-aos-delay="100">
+          <form
+            action="{% url 'browse_books' %}"
+            method="get"
+            class="search-form-explore position-relative mb-5"
+          >
+            <i class="fas fa-search search-icon"></i>
+            <input
+              type="text"
+              name="q"
+              class="form-control"
+              placeholder="Search for titles, authors, or genres..."
+            />
+          </form>
+        </div>
+        <div
+          class="text-center category-bubbles"
+          data-aos="fade-up"
+          data-aos-delay="200"
+        >
+          <a href="{% url 'browse_books' %}?q=fantasy" class="bubble"
+            >Fantasy</a
+          >
+          <a href="{% url 'browse_books' %}?q=science+fiction" class="bubble"
+            >Sci-Fi</a
+          >
+          <a href="{% url 'browse_books' %}?q=mystery" class="bubble"
+            >Mystery</a
+          >
+          <a href="{% url 'browse_books' %}?q=thriller" class="bubble"
+            >Thriller</a
+          >
+          <a href="{% url 'browse_books' %}?q=romance" class="bubble"
+            >Romance</a
+          >
+          <a href="{% url 'browse_books' %}?q=history" class="bubble"
+            >History</a
+          >
+          <a href="{% url 'browse_books' %}?q=biography" class="bubble"
+            >Biography</a
+          >
+          <a href="{% url 'browse_books' %}?q=technology" class="bubble"
+            >Technology</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- Discover Carousel Section -->
+    <section id="discover" class="section">
+      <div class="container">
+        <h2 class="section-title text-light" data-aos="fade-up">
+          Trending Now
+        </h2>
+        {% if trending_books %}
+        <div class="position-relative" data-aos="zoom-in">
+          <div class="swiper-container" id="book-carousel">
+            <div class="swiper-wrapper">
+              {% for book in trending_books %}
+              <div class="swiper-slide">
+                <a href="{% url 'book_detail' book.id %}">
+                  <img src="{{ book.thumbnail }}" alt="Trending Book Cover" />
+                </a>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+        </div>
+        {% else %}
+        <p class="text-center text-muted">
+          Could not load trending books at the moment. Please check back later.
+        </p>
+        {% endif %}
+      </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="section">
+      <div class="container">
+        <h2 class="section-title text-light" data-aos="fade-up">
+          Get In Touch
+        </h2>
+        <div class="contact-container" data-aos="fade-up" data-aos-delay="100">
+          <div class="row g-0 glass">
+            <!-- Left Side: Info Box -->
+            <div class="col-lg-5 contact-info-box">
+              <h4>Connect With Us</h4>
+              <p>
+                Have questions? We'd love to hear from you. Reach out and we'll
+                get back to you shortly.
+              </p>
+              <p class="d-flex align-items-center">
+                <i class="fas fa-envelope icon me-3"></i>info@bookhub.com
+              </p>
+              <p class="d-flex align-items-center">
+                <i class="fas fa-phone icon me-3"></i>+91 8921879091
+              </p>
+              <p class="d-flex align-items-center mb-0">
+                <i class="fas fa-map-marker-alt icon me-3"></i>BookHub, Kerala,
+                India
+              </p>
+            </div>
+            <!-- Right Side: Form -->
+            <div class="col-lg-7 contact-form-wrapper">
+              <form>
+                <div class="mb-3">
+                  <label for="name" class="form-label">Your Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    id="name"
+                    placeholder="John"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="email" class="form-label">Email Address</label>
+                  <input
+                    type="email"
+                    class="form-control"
+                    id="email"
+                    placeholder="john@example.com"
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="message" class="form-label">Your Message</label>
+                  <textarea
+                    class="form-control"
+                    id="message"
+                    rows="4"
+                    placeholder="How can we help?"
+                  ></textarea>
+                </div>
+                <button type="submit" class="btn btn-login btn-submit w-100">
+                  <i class="fas fa-paper-plane me-2"></i>Send Message
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Footer -->
+    <footer class="py-4 mt-auto">
+      <div class="container text-center">
+        <p class="mb-0 text-muted">© 2025 BookHub. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- All JavaScript Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.1/gsap.min.js"></script>
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@1.41.4/tsparticles.min.js"></script>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        AOS.init({ duration: 800, once: true, offset: 50 });
+
+        gsap.from(".hero-content h1", {
+          duration: 1,
+          y: 30,
+          opacity: 0,
+          ease: "power4.out",
+          delay: 0.2,
+        });
+        gsap.from(".hero-content p", {
+          duration: 1,
+          y: 30,
+          opacity: 0,
+          ease: "power4.out",
+          delay: 0.4,
+        });
+        gsap.from(".hero-cta", {
+          duration: 1,
+          y: 30,
+          opacity: 0,
+          ease: "bounce.out",
+          delay: 0.8,
+        });
+
+        tsParticles.load("particles-js", {
+          interactivity: {
+            events: { onHover: { enable: true, mode: "grab" }, resize: true },
+            modes: { grab: { distance: 150, links: { opacity: 1 } } },
+          },
+          particles: {
+            color: { value: "#a9b3c9" },
+            links: {
+              color: "#a9b3c9",
+              distance: 150,
+              enable: true,
+              opacity: 0.2,
+              width: 1,
+            },
+            move: {
+              direction: "none",
+              enable: true,
+              outMode: "bounce",
+              random: true,
+              speed: 0.5,
+              straight: false,
+            },
+            number: { density: { enable: true, value_area: 800 }, value: 50 },
+            opacity: { value: 0.2 },
+            shape: { type: "circle" },
+            size: { random: true, value: 2 },
+          },
+        });
+
+        new Swiper("#book-carousel", {
+          effect: "coverflow",
+          grabCursor: true,
+          centeredSlides: true,
+          slidesPerView: "auto",
+          loop: true,
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+          coverflowEffect: {
+            rotate: 20,
+            stretch: 0,
+            depth: 150,
+            modifier: 1,
+            slideShadows: true,
+          },
+          autoplay: { delay: 3000, disableOnInteraction: false },
+        });
+
+        const navbar = document.querySelector(".navbar");
+        window.addEventListener("scroll", () => {
+          if (window.scrollY > 50) navbar.classList.add("scrolled");
+          else navbar.classList.remove("scrolled");
+        });
+
+        // --- THIS IS THE NEW CODE TO ADD ---
+        const cards = document.querySelectorAll(".feature-card");
+        cards.forEach((card) => {
+          card.addEventListener("mousemove", (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            // Apply a more subtle tilt for these cards
+            card.style.transform = `perspective(1000px) rotateX(${
+              -y / 25
+            }deg) rotateY(${x / 25}deg) scale(1.05)`;
+          });
+          card.addEventListener("mouseleave", () => {
+            card.style.transform =
+              "perspective(1000px) rotateX(0) rotateY(0) scale(1)";
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,361 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title|default:"BookHub - Make Payment" }}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- Animate.css for animations -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+    />
+    <!-- Font Awesome for icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!-- Razorpay Checkout JS -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+      body {
+        background: linear-gradient(135deg, #e0e7ef 0%, #cfd9df 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        font-family: 'Inter', sans-serif;
+      }
+      .glass {
+        background: rgba(255, 255, 255, 0.18);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+        backdrop-filter: blur(12px) saturate(180%);
+        -webkit-backdrop-filter: blur(12px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+      }
+      .navbar,
+      .navbar .container {
+        background: rgba(255, 255, 255, 0.18) !important;
+        backdrop-filter: blur(12px) saturate(180%);
+        -webkit-backdrop-filter: blur(12px) saturate(180%);
+        border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+      }
+      .navbar-brand {
+        font-family: 'Pacifico', cursive;
+        color: #0d6efd !important;
+        font-size: 1.75rem;
+      }
+      .nav-link {
+        transition: color 0.3s, background 0.3s, box-shadow 0.3s;
+        color: #222 !important;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        margin: 0 0.2rem;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        color: #0d6efd !important;
+        background: rgba(255, 255, 255, 0.28);
+        box-shadow: 0 2px 12px 0 rgba(31, 38, 135, 0.1);
+        border-radius: 8px;
+      }
+      .login-btn,
+      .register-btn {
+        margin: 0 5px;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.3s, color 0.3s;
+        background: rgba(255, 255, 255, 0.18) !important;
+        border: 1px solid rgba(255, 255, 255, 0.28) !important;
+        color: #0d6efd !important;
+        backdrop-filter: blur(8px) saturate(180%);
+        -webkit-backdrop-filter: blur(8px) saturate(180%);
+        box-shadow: 0 2px 8px 0 rgba(31, 38, 135, 0.1);
+      }
+      .login-btn:hover,
+      .register-btn:hover {
+        transform: scale(1.08);
+        box-shadow: 0 6px 24px rgba(13, 110, 253, 0.18),
+          0 2px 12px 0 rgba(31, 38, 135, 0.12);
+        color: #fff !important;
+        background: rgba(13, 110, 253, 0.85) !important;
+        border: 1px solid rgba(13, 110, 253, 0.28) !important;
+      }
+      .payment-card {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 18px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.18);
+        backdrop-filter: blur(8px) saturate(180%);
+        -webkit-backdrop-filter: blur(8px) saturate(180%);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .payment-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 40px 0 rgba(31, 38, 135, 0.25);
+      }
+      .section-title {
+        color: #333;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+      }
+      .detail-item {
+        margin-bottom: 0.75rem;
+      }
+      .detail-item strong {
+        color: #444;
+      }
+      .detail-item span {
+        color: #666;
+      }
+      .pay-button {
+        width: 100%;
+        background: linear-gradient(135deg, #0d6efd, #0056b3) !important;
+        border: none !important;
+        border-radius: 10px;
+        padding: 0.7rem 1rem;
+        color: white;
+        font-size: 1.1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(13, 110, 253, 0.22);
+      }
+      .pay-button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(13, 110, 253, 0.28);
+        background: linear-gradient(135deg, #0056b3, #003d82) !important;
+      }
+      .pay-button:active {
+        transform: translateY(0);
+      }
+      footer.bg-dark {
+        background: rgba(30, 30, 30, 0.35) !important;
+        backdrop-filter: blur(8px) saturate(180%);
+        -webkit-backdrop-filter: blur(8px) saturate(180%);
+        border-top: 1px solid rgba(255, 255, 255, 0.18);
+      }
+      /* Custom style for messages */
+      .alert-container {
+        position: fixed; /* Fixed position so it's not affected by scroll */
+        top: 20px; /* Adjust as needed */
+        left: 50%;
+        transform: translateX(-50%);
+        max-width: 450px;
+        width: 90%; /* Responsive width */
+        z-index: 1050; /* Above most other content */
+        margin: 0; /* Remove existing margin to control with top/left */
+        pointer-events: none; /* Allows clicks to pass through to elements behind */
+      }
+      .alert {
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        padding: 1rem 1.5rem;
+        opacity: 1;
+        transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+        pointer-events: all; /* Make the alert clickable/interactive */
+      }
+      .alert.fade-out {
+          opacity: 0;
+          transform: translateY(-20px); /* Move up slightly as it fades */
+      }
+      .alert-success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+      .alert-info { background-color: #d1ecf1; color: #0c5460; border-color: #bee5eb; }
+      .alert-warning { background-color: #fff3cd; color: #856404; border-color: #ffeeba; }
+      .alert-error, .alert-danger { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+    </style>
+  </head>
+  <body class="d-flex flex-column min-vh-100">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light glass shadow-sm py-3">
+      <div class="container glass">
+        <h1 class="navbar-brand fw-bold">BookHub</h1>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'browse_books' %}"
+                >Browse Books</a
+              >
+            </li>
+          </ul>
+          <div class="ms-lg-3 mt-3 mt-lg-0">
+            {% if request.session.user_id %}
+                <a href="{% url 'logout' %}" class="btn btn-outline-primary register-btn">Logout</a>
+                {% if request.session.user_type == 'member' %}
+                  <a href="{% url 'userpage' %}" class="btn btn-primary login-btn">My Dashboard</a>
+                {% elif request.session.user_type == 'librarian' %}
+                  <a href="{% url 'librarian_dashboard' %}" class="btn btn-primary login-btn">Librarian Panel</a>
+                {% endif %}
+            {% else %}
+                <a
+                  href="{% url 'login' %}"
+                  class="btn btn-primary login-btn"
+                  >Login</a
+                >
+                <a
+                  href="{% url 'register' %}"
+                  class="btn btn-outline-primary register-btn"
+                  >Register</a
+                >
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+    <!-- Main Content -->
+    <main class="flex-grow-1 d-flex align-items-center justify-content-center py-5">
+      <div class="container">
+        {% if messages %}
+            <div class="alert-container">
+            {% for message in messages %}
+            <div class="alert {% if message.tags %}alert-{{ message.tags }} {% endif %} p-3 rounded-3 mb-2" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            </div>
+        {% endif %}
+        <div class="row justify-content-center">
+          <div class="col-md-7 col-lg-5">
+            <div class="card payment-card shadow-lg animate__animated animate__zoomIn p-4">
+              <div class="card-body text-center">
+                <h2 class="section-title mb-4">
+                  <i class="fas fa-hand-holding-usd me-2"></i>Complete Your Payment
+                </h2>
+                <div class="mb-4 text-start">
+                    <div class="detail-item">
+                        <strong>Book:</strong> <span>{{ book_title }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Amount:</strong> <span class="fs-4 fw-bold text-success">₹{{ amount_display|floatformat:"-2" }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Razorpay Order ID:</strong> <span>{{ razorpay_order_id }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <strong>Paying As:</strong> <span>{{ member_name }} ({{ member_email }})</span>
+                    </div>
+                </div>
+                
+                <button id="rzp-button" class="btn pay-button">
+                  <i class="fas fa-credit-card me-2"></i>Pay Now
+                </button>
+                <p class="mt-3 text-muted">You will be redirected to a secure payment gateway.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+    <!-- Hidden form for Razorpay callback -->
+    <form id="razorpay_callback_form" method="POST" action="{% url 'payment_success' transaction_id=transaction_id %}" style="display: none;">
+        {% csrf_token %}
+        <input type="hidden" name="razorpay_payment_id" id="razorpay_payment_id_input">
+        <input type="hidden" name="razorpay_order_id" id="razorpay_order_id_input">
+        <input type="hidden" name="razorpay_signature" id="razorpay_signature_input">
+    </form>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-4 mt-5 glass">
+      <div class="container text-center">
+        <p class="mb-0">&copy; 2025 BookHub. All rights reserved.</p>
+      </div>
+    </footer>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Prepare data as a JSON object to safely pass to JavaScript
+      const paymentData = {
+  key: "{{ RAZORPAY_KEY_ID|default:''|escapejs }}",
+  amount: "{{ amount|default:0 }}",
+  currency: "INR",
+  name: "BookHub Purchases",
+  description: "Purchase of '{{ book_title|default:''|escapejs }}'",
+  order_id: "{{ razorpay_order_id|default:''|escapejs }}",
+  prefill: {
+    name: "{{ member_name|default:''|escapejs }}",
+    email: "{{ member_email|default:''|escapejs }}",
+    contact: "{{ member_phone|default:''|escapejs }}"
+  },
+  theme: {
+    color: "#0d6efd"
+  },
+  transactionId: "{{ transaction_id|default:''|escapejs }}"
+};
+
+
+      // Razorpay Checkout logic
+      document.getElementById('rzp-button').onclick = function(e) {
+          e.preventDefault(); // Prevent default button action
+          console.log("Pay Now button clicked. Initiating Razorpay...");
+
+          const options = {
+              "key": paymentData.key,
+              "amount": paymentData.amount,
+              "currency": paymentData.currency,
+              "name": paymentData.name,
+              "description": paymentData.description,
+              "order_id": paymentData.order_id,
+              "handler": function (response) {
+                  console.log("Razorpay payment successful. Response:", response);
+                  // Populate the hidden form fields with Razorpay response
+                  document.getElementById('razorpay_payment_id_input').value = response.razorpay_payment_id;
+                  document.getElementById('razorpay_order_id_input').value = response.razorpay_order_id;
+                  document.getElementById('razorpay_signature_input').value = response.razorpay_signature;
+                  
+                  console.log("Submitting hidden form to Django backend for verification...");
+                  // Submit the hidden form
+                  document.getElementById('razorpay_callback_form').submit();
+              },
+              "prefill": paymentData.prefill,
+              "theme": paymentData.theme
+          };
+          const rzp1 = new Razorpay(options);
+          rzp1.on('payment.failed', function (response){
+              console.error("Razorpay payment failed. Error:", response.error);
+              // Redirect to userpage with a failure message
+              window.location.href = "{% url 'userpage' %}?payment_status=failed&message=" + encodeURIComponent(response.error.description);
+          });
+          rzp1.open();
+      };
+
+      // Auto-hide Django messages
+      document.addEventListener('DOMContentLoaded', () => {
+          const alertContainer = document.querySelector('.alert-container');
+          if (alertContainer) {
+              const alerts = alertContainer.querySelectorAll('.alert');
+              alerts.forEach(alert => {
+                  setTimeout(() => {
+                      alert.classList.add('fade-out');
+                  }, 3000); // Message visible for 3 seconds
+
+                  alert.addEventListener('transitionend', () => {
+                      if (alert.classList.contains('fade-out')) {
+                          alert.remove();
+                      }
+                  });
+              });
+          }
+      });
+    </script>
+  </body>
+</html>

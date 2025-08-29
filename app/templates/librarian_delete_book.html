@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Confirm Deletion - BookHub</title>
+
+    <!-- Fonts, Icons, and Animations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <style>
+        :root {
+            --bg-dark: #121826;
+            --card-bg: rgba(18, 24, 38, 0.85);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --primary-accent: #6A82FB;
+            --danger-accent: #FC5C7D; /* Using secondary accent for danger */
+            --text-light: #F0F8FF;
+            --text-muted: #e1e1e1;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            background-color: var(--bg-dark);
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+        }
+        #particles-js { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+
+        .wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        
+        .confirm-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-glass);
+            border-radius: 16px;
+            padding: 2.5rem;
+            width: 100%;
+            max-width: 550px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+            text-align: center;
+        }
+        .confirm-card h2 {
+            font-weight: 600;
+            color: var(--text-light);
+        }
+        .book-info {
+            background-color: rgba(0,0,0,0.2);
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1.5rem 0;
+            border-left: 4px solid var(--danger-accent);
+            text-align: left;
+        }
+        /* .book-info strong {
+            color: rgb(255, 255, 255);
+        } */
+        .btn-danger-gradient {
+            background: linear-gradient(90deg, #fd5d7d, #ff2c55);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-danger-gradient:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(252, 92, 125, 0.3);
+        }
+        .btn-secondary-custom {
+            background-color: var(--border-glass);
+            border: 1px solid var(--border-glass);
+            color: aliceblue;
+        }
+        .btn-secondary-custom:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+        }
+    </style>
+</head>
+<body>
+    <div id="particles-js"></div>
+    
+    <main class="wrapper">
+        <div class="confirm-card" data-aos="zoom-in">
+            <i class="fas fa-exclamation-triangle fa-3x mb-3" style="color: var(--danger-accent);"></i>
+            <h2 class="mb-2">Confirm Deletion</h2>
+            <p style="color: rgb(199, 199, 199);" >Are you sure you want to permanently delete this book? This action cannot be undone.</p>
+            
+            <div style="color: #d3d3d3;" class="book-info">
+                <strong>Title:</strong> {{ book.title }}<br>
+                <strong>Author:</strong> {{ book.author|default:"N/A" }}
+            </div>
+            
+            <form method="post" action="{% url 'librarian_delete_book' book.id %}">
+                {% csrf_token %}
+                <div class="d-flex justify-content-center gap-3 mt-4">
+                    <a href="{% url 'librarian_book_management' %}" class="btn btn-secondary-custom px-4">Cancel</a>
+                    <button type="submit" class="btn btn-danger-gradient px-4">Yes, Delete</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <!-- Scripts for animations -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@1.41.4/tsparticles.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 500, once: true });
+        tsParticles.load("particles-js", {"interactivity":{"events":{"onHover":{"enable":true,"mode":"grab"},"resize":true},"modes":{"grab":{"distance":150,"links":{"opacity":1}}}},"particles":{"color":{"value":"#a9b3c9"},"links":{"color":"#a9b3c9","distance":150,"enable":true,"opacity":0.2,"width":1},"move":{"direction":"none","enable":true,"outMode":"bounce","random":true,"speed":0.5,"straight":false},"number":{"density":{"enable":true,"value_area":800},"value":40},"opacity":{"value":0.2},"shape":{"type":"circle"},"size":{"random":true,"value":2}},"detectRetina":true});
+    </script>
+</body>
+</html>

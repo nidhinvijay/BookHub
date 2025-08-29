@@ -1,0 +1,200 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title|default:"My Dashboard" }} - BookHub</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+
+    <style>
+        :root {
+            --bg-dark: #121826;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-glass: rgba(255, 255, 255, 0.1);
+            --primary-accent: #6A82FB;
+            --text-light: #F0F8FF;
+            --text-muted: #a9b3c9;
+            --success: #2dce89;
+            --warning: #fb6340;
+            --info: #11cdef;
+            --danger: #f5365c; /* For rejected/failed items */
+        }
+        html { scroll-behavior: smooth; }
+        body { background-color: var(--bg-dark); color: var(--text-light); font-family: 'Poppins', sans-serif; }
+        .navbar { background-color: var(--card-bg); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-glass); }
+        .navbar-brand, .nav-link { color: var(--text-light) !important; }
+        .nav-link.active, .nav-link:hover { color: var(--primary-accent) !important; }
+
+        .page-header { padding: 5rem 0 3rem; text-align: center; }
+        .page-header h1 { font-weight: 700; font-size: 2.8rem; }
+        .page-header .text-muted { font-size: 1.2rem; }
+
+        .quick-access-card {
+            background: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 15px; padding: 2rem; text-align: center;
+            transition: transform 0.3s ease-out, background 0.3s ease; transform-style: preserve-3d;
+            text-decoration: none; color: var(--text-light); display: block;
+        }
+        .quick-access-card:hover { background: rgba(255, 255, 255, 0.1); }
+        .quick-access-card h5, .quick-access-card p, .quick-access-card i { transform: translateZ(20px); }
+        .quick-access-icon { font-size: 3rem; margin-bottom: 1.5rem; color: var(--primary-accent); }
+        .quick-access-card p { color: var(--text-muted); font-size: 0.9rem; }
+
+        .section-card { background: var(--card-bg); border: 1px solid var(--border-glass); border-radius: 15px; padding: 2rem; }
+        .section-card-title { font-size: 1.5rem; font-weight: 600; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-glass); }
+        
+        .transaction-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 1rem; background-color: rgba(0, 0, 0, 0.15); border-radius: 8px; margin-bottom: 1rem;
+        }
+        .transaction-item:last-child { margin-bottom: 0; }
+        .book-info-title { font-weight: 600; color: var(--text-light); }
+        .book-info-date { font-size: 0.85rem; color: var(--text-muted); }
+
+        .book-purchase-card {
+            background: transparent; text-decoration: none; display: block;
+            transition: transform 0.3s ease;
+        }
+        .book-purchase-card:hover { transform: translateY(-5px); }
+        .book-purchase-card img {
+            height: 200px; object-fit:contain; border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3); background-color: #1a2233;
+        }
+        .book-purchase-card .card-title { font-size: 0.9rem; font-weight: 600; margin-top: 0.75rem; color: var(--text-light); }
+        .book-purchase-card .card-text { font-size: 0.8rem; color: var(--text-muted); }
+        
+        .empty-state { text-align: center; padding: 3rem 1rem; }
+        .empty-state i { font-size: 3rem; color: var(--text-muted); opacity: 0.5; margin-bottom: 1rem; }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <div class="navbar-brand fs-4" href="{% url 'home' %}"><i class="fas fa-book-open-reader me-2"></i>BookHub</div>
+            <div class="collapse navbar-collapse"><ul class="navbar-nav ms-auto"><li class="nav-item"><a class="nav-link" href="{% url 'browse_books' %}">Browse</a></li><li class="nav-item"><a class="nav-link active" href="{% url 'userpage' %}">My Dashboard</a></li><li class="nav-item"><a class="nav-link" href="{% url 'logout' %}">Logout</a></li></ul></div>
+        </div>
+    </nav>
+    
+    <main class="container">
+        <header class="page-header" data-aos="fade-in"><h1>{{ page_title }}</h1><p style="color: rgb(230, 232, 235);">Welcome to your personal BookHub Dashboard.</p></header>
+
+        <!-- Quick Access Hub -->
+        <section class="mb-5" data-aos="fade-up" data-aos-delay="100">
+            <div class="row g-4">
+                <div class="col-lg-4"><a href="{% url 'browse_books' %}" class="quick-access-card h-100"><i class="fas fa-search quick-access-icon"></i><h5>Browse Books</h5><p>Explore our vast collection and find your next favorite read.</p></a></div>
+                <div class="col-lg-4"><a href="{% url 'member_profile_edit' %}" class="quick-access-card h-100"><i class="fas fa-user-edit quick-access-icon"></i><h5>Edit Profile</h5><p>Keep your personal information and password up to date.</p></a></div>
+                <div class="col-lg-4"><a href="#purchased-books-section" class="quick-access-card h-100"><i class="fas fa-history quick-access-icon"></i><h5>View History</h5><p>Quickly jump to your collection of purchased books.</p></a></div>
+            </div>
+        </section>
+
+        <!-- Activity Sections -->
+        <div class="row gy-4">
+            <!-- Awaiting Your Payment -->
+            <div class="col-12" data-aos="fade-up" data-aos-delay="200">
+                <section class="section-card">
+                    <h2 class="section-card-title"><i class="fas fa-credit-card me-2 text-info"></i>Awaiting Your Payment</h2>
+                    {% if payment_pending_requests %}
+                        {% for req in payment_pending_requests %}
+                        <div class="transaction-item">
+                            <div>
+                                <div class="book-info-title">{{ req.title }}</div>
+                                <div class="book-info-date">Approved on: {{ req.approval_date }}</div>
+                                <div class="book-info-title mt-1">Amount: ₹{{ req.amount_display|floatformat:2 }}</div>
+                            </div>
+                            <a href="{% url 'initiate_payment_page' req.transaction_id %}" class="btn btn-info">Pay Now</a>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="empty-state"><i class="fas fa-check-double"></i><p class="text-muted">You're all caught up! No payments are pending.</p></div>
+                    {% endif %}
+                </section>
+            </div>
+            
+            <!-- Pending Approval -->
+            <div class="col-12" data-aos="fade-up" data-aos-delay="300">
+                <section class="section-card">
+                    <h2 class="section-card-title"><i class="fas fa-hourglass-half me-2 text-warning"></i>Pending Approval</h2>
+                    {% if pending_requests %}
+                        {% for req in pending_requests %}
+                        <div class="transaction-item">
+                            <div><div class="book-info-title">{{ req.title }}</div><div class="book-info-date">Requested on: {{ req.request_date }}</div></div>
+                            <span class="badge bg-warning text-dark">Awaiting Approval</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                         <div class="empty-state"><i class="fas fa-inbox"></i><p class="text-muted">You have no requests awaiting librarian approval.</p></div>
+                    {% endif %}
+                </section>
+            </div>
+
+            <!-- Rejected or Failed Transactions -->
+            <div class="col-12" data-aos="fade-up" data-aos-delay="400">
+                <section class="section-card">
+                    <h2 class="section-card-title"><i class="fas fa-exclamation-triangle me-2 text-danger"></i>Rejected & Failed</h2>
+                    {% if rejected_or_failed_transactions %}
+                        {% for item in rejected_or_failed_transactions %}
+                        <div class="transaction-item">
+                            <div><div class="book-info-title">{{ item.title }}</div><div class="book-info-date">Status updated on: {{ item.date }}</div></div>
+                            <span class="badge bg-danger">{{ item.display_status }}</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                         <div class="empty-state"><i class="far fa-thumbs-up"></i><p class="text-muted">No rejected or failed transactions. Good job!</p></div>
+                    {% endif %}
+                </section>
+            </div>
+
+            <!-- Purchased Books Section -->
+            <div class="col-12" data-aos="fade-up" data-aos-delay="500" id="purchased-books-section">
+                <section class="section-card">
+                    <h2 class="section-card-title"><i class="fas fa-book-reader me-2 text-success"></i>Your Purchased Books</h2>
+                    {% if purchased_books %}
+                        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-4">
+                        {% for purchase in purchased_books %}
+                            <div class="col">
+                                <div class="book-purchase-card text-center">
+                                    <img src="{{ purchase.cover|default:'https://placehold.co/220x330/1a2233/a9b3c9?text=No+Cover' }}" class="img-fluid" alt="Cover for {{ purchase.title }}">
+                                    <h6 class="card-title text-truncate">{{ purchase.title }}</h6>
+                                    <p class="card-text text-truncate">{{ purchase.author|default:"Unknown Author" }}</p>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="empty-state"><i class="fas fa-shopping-cart"></i><p class="text-muted">Your collection is empty. Start your adventure today!</p><a href="{% url 'browse_books' %}" class="btn btn-primary mt-2">Browse for Books</a></div>
+                    {% endif %}
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="py-4 mt-5"><div class="container text-center"><p class="mb-0 text-muted">© 2025 BookHub. All rights reserved.</p></div></footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            AOS.init({ duration: 800, once: true, offset: 50 });
+            const cards = document.querySelectorAll('.quick-access-card');
+            cards.forEach(card => {
+                card.addEventListener('mousemove', e => {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left - rect.width / 2;
+                    const y = e.clientY - rect.top - rect.height / 2;
+                    card.style.transform = `perspective(1000px) rotateX(${-y / 20}deg) rotateY(${x / 20}deg) scale(1.05)`;
+                });
+                card.addEventListener('mouseleave', () => { card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale(1)'; });
+            });
+        });
+    </script>
+</body>
+</html>

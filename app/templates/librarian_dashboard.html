@@ -1,0 +1,457 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ page_title|default:"Librarian Dashboard" }} - BookHub</title>
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+
+    <!-- Animation Libraries CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+
+    <style>
+      :root {
+        --bg-dark: #121826;
+        --card-bg: rgba(255, 255, 255, 0.05);
+        --border-glass: rgba(255, 255, 255, 0.1);
+        --primary-accent: #6a82fb;
+        --secondary-accent: #fc5c7d;
+        --text-light: #f0f8ff;
+        --text-muted: #e4d2d2;
+        --success: #2dce89;
+        --warning: #fb6340;
+        --info: #11cdef;
+        --danger: #f5365c;
+      }
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        font-family: "Poppins", sans-serif;
+      }
+      .navbar {
+        background-color: var(--card-bg);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-glass);
+      }
+      .navbar-brand,
+      .nav-link {
+        color: var(--text-light) !important;
+      }
+      .nav-link.active,
+      .nav-link:hover {
+        color: var(--primary-accent) !important;
+      }
+
+      .page-header {
+        padding: 5rem 0 3rem;
+      }
+      .page-header h1 {
+        font-weight: 700;
+        font-size: 2.8rem;
+      }
+
+      .management-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 15px;
+        padding: 2rem;
+        text-align: center;
+        transition: transform 0.3s ease-out, background 0.3s ease;
+        transform-style: preserve-3d;
+        text-decoration: none;
+        color: var(--text-light);
+        display: block;
+      }
+      .management-card:hover {
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .management-card h5,
+      .management-card p,
+      .management-card i {
+        transform: translateZ(20px);
+      }
+      .management-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        color: var(--primary-accent);
+      }
+      .management-card p {
+        color: var(--text-muted);
+        font-size: 0.9rem;
+      }
+
+      .section-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border-glass);
+        border-radius: 15px;
+        padding: 2rem;
+      }
+      .section-card-title {
+        font-size: 1.5rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--border-glass);
+      }
+      .section-card-title span {
+        vertical-align: middle;
+      }
+      .section-card-title .badge {
+        font-size: 1rem;
+      }
+
+      /* --- NEW TABLE STYLES --- */
+      .table {
+        --bs-table-bg: transparent; /* Remove white background */
+        --bs-table-color: var(--text-light); /* Set default text color */
+        --bs-table-border-color: var(--border-glass); /* Set border color */
+        --bs-table-hover-bg: rgba(255, 255, 255, 0.07); /* Hover effect */
+        --bs-table-hover-color: var(--text-light);
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+      }
+      .table thead th {
+        color: var(--text-muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        font-size: 0.8rem;
+        letter-spacing: 0.5px;
+        border-bottom-width: 1px;
+      }
+      .table td {
+        vertical-align: middle;
+        padding: 0.9rem;
+      }
+      .table-responsive {
+        background-color: rgba(
+          0,
+          0,
+          0,
+          0.1
+        ); /* Subtle dark background for the table area */
+        border-radius: 8px;
+        padding: 0.5rem;
+      }
+      /* --- END NEW TABLE STYLES --- */
+
+      .status-badge {
+        padding: 0.35em 0.65em;
+        font-size: 0.8em;
+        font-weight: 600;
+        border-radius: 0.375rem;
+      }
+      .status-pending_purchase {
+        background-color: var(--warning);
+        color: #fff;
+      }
+      .status-payment_pending {
+        background-color: var(--info);
+        color: #fff;
+      }
+      .status-purchased {
+        background-color: var(--success);
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand fs-4" href="{% url 'home' %}"
+          ><i class="fas fa-book-open-reader me-2"></i>BookHub</a
+        >
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link active" href="{% url 'librarian_dashboard' %}"
+                >Dashboard</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'librarian_book_management' %}"
+                >Books</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'librarian_member_management' %}"
+                >Members</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'librarian_reports' %}"
+                >Reports</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="container">
+      <header class="page-header text-center" data-aos="fade-in">
+        <h1>Librarian Dashboard</h1>
+        <p style="color: #c4c4c4;" class="lead">
+          Oversee all library operations from one place.
+        </p>
+      </header>
+
+      <!-- Management Hub -->
+      <section class="mb-5" data-aos="fade-up" data-aos-delay="100">
+        <div class="row g-4">
+          <div class="col-lg-4">
+            <a
+              href="{% url 'librarian_book_management' %}"
+              class="management-card h-100"
+              ><i class="fas fa-book management-icon"></i>
+              <h5>Manage Books</h5>
+              <p>Add, edit, and update the entire library book catalog.</p></a
+            >
+          </div>
+          <div class="col-lg-4">
+            <a
+              href="{% url 'librarian_member_management' %}"
+              class="management-card h-100"
+              ><i class="fas fa-users management-icon"></i>
+              <h5>Manage Members</h5>
+              <p>View member details and manage their account status.</p></a
+            >
+          </div>
+          <div class="col-lg-4">
+            <a
+              href="{% url 'librarian_reports' %}"
+              class="management-card h-100"
+              ><i class="fas fa-chart-pie management-icon"></i>
+              <h5>View Reports</h5>
+              <p>
+                Access analytics on purchases, popular books, and revenue.
+              </p></a
+            >
+          </div>
+        </div>
+      </section>
+
+      <!-- Expanded Transaction Tables -->
+      <div class="row">
+        <!-- Card 1: Pending Purchase Requests -->
+        <div class="col-12" data-aos="fade-up" data-aos-delay="200">
+          <section class="section-card mb-4">
+            <h2
+              class="section-card-title d-flex justify-content-between align-items-center"
+            >
+              <span
+                ><i class="fas fa-hourglass-half me-2 text-warning"></i>Pending
+                Purchase Requests</span
+              >
+              <span class="badge bg-warning"
+                >{{ pending_buy_requests|length }}</span
+              >
+            </h2>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Book</th>
+                    <th>Member</th>
+                    <th>Request Date</th>
+                    <th class="text-end">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for request in pending_buy_requests %}
+                  <tr>
+                    <td>{{ request.book.title }}</td>
+                    <td>{{ request.member.name }}</td>
+                    <td>{{ request.request_date|date:"Y-m-d" }}</td>
+                    <td class="text-end">
+                      <form
+                        action="{% url 'accept_buy_request' request.id %}"
+                        method="post"
+                        class="d-inline"
+                      >
+                      {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-success">
+                          Approve
+                        </button>
+                      </form>
+                      <form
+                        action="{% url 'reject_buy_request' request.id %}"
+                        method="post"
+                        class="d-inline"
+                      >
+                      {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-danger">
+                          Reject
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="4" class="text-center text-muted p-4">
+                      No pending purchase requests.
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- Card 2: Awaiting Member Payment -->
+        <div class="col-12" data-aos="fade-up" data-aos-delay="300">
+          <section class="section-card mb-4">
+            <h2
+              class="section-card-title d-flex justify-content-between align-items-center"
+            >
+              <span
+                ><i class="fas fa-credit-card me-2 text-info"></i>Awaiting
+                Member Payment</span
+              >
+              <span class="badge bg-info"
+                >{{ payment_pending_transactions|length }}</span
+              >
+            </h2>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Book</th>
+                    <th>Member</th>
+                    <th>Approved On</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for transaction in payment_pending_transactions %}
+                  <tr>
+                    <td>{{ transaction.book_title }}</td>
+                    <td>{{ transaction.member_name }}</td>
+                    <td>{{ transaction.approval_date|date:"Y-m-d" }}</td>
+                    <td>₹{{ transaction.amount_display|floatformat:2 }}</td>
+                    <td>
+                      <span class="status-badge status-{{ transaction.status }}"
+                        >{{ transaction.status_display }}</span
+                      >
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-center text-muted p-4">
+                      No transactions awaiting payment.
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+
+        <!-- Card 3: Confirmed Purchases -->
+        <div class="col-12" data-aos="fade-up" data-aos-delay="400">
+          <section class="section-card">
+            <h2
+              class="section-card-title d-flex justify-content-between align-items-center"
+            >
+              <span
+                ><i class="fas fa-check-circle me-2 text-success"></i>Confirmed
+                Purchases</span
+              >
+              <span class="badge bg-success"
+                >{{ confirmed_purchases|length }}</span
+              >
+            </h2>
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Book</th>
+                    <th>Member</th>
+                    <th>Paid On</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for purchase in confirmed_purchases %}
+                  <tr>
+                    <td>{{ purchase.book_title }}</td>
+                    <td>{{ purchase.member_name }}</td>
+                    <td>{{ purchase.approval_date|date:"Y-m-d" }}</td>
+                    <td>₹{{ purchase.amount_display|floatformat:2 }}</td>
+                    <td>
+                      <span class="status-badge status-{{ purchase.status }}"
+                        >{{ purchase.status_display }}</span
+                      >
+                    </td>
+                  </tr>
+                  {% empty %}
+                  <tr>
+                    <td colspan="5" class="text-center text-muted p-4">
+                      No purchases have been confirmed yet.
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer class="py-4 mt-5">
+      <div class="container text-center">
+        <p class="mb-0 text-muted">© 2025 BookHub. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.1/gsap.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        AOS.init({ duration: 800, once: true, offset: 50 });
+
+        const cards = document.querySelectorAll(".management-card");
+        cards.forEach((card) => {
+          card.addEventListener("mousemove", (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left - rect.width / 2;
+            const y = e.clientY - rect.top - rect.height / 2;
+            card.style.transform = `perspective(1000px) rotateX(${
+              -y / 25
+            }deg) rotateY(${x / 25}deg) scale(1.05)`;
+          });
+          card.addEventListener("mouseleave", () => {
+            card.style.transform =
+              "perspective(1000px) rotateX(0) rotateY(0) scale(1)";
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

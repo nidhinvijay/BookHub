@@ -1,0 +1,369 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BookHub - Browse Books</title>
+
+    <!-- Fonts, Icons, and Animation Libraries -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css"
+    />
+
+    <style>
+      :root {
+        --bg-dark: #121826;
+        --bg-glass: rgba(18, 24, 38, 0.85);
+        --border-glass: rgba(255, 255, 255, 0.1);
+        --primary-accent: #6a82fb;
+        --secondary-accent: #fc5c7d;
+        --text-light: #f0f8ff;
+        --text-muted: #a9b3c9;
+      }
+
+      body {
+        background-color: var(--bg-dark);
+        color: var(--text-light);
+        font-family: "Poppins", sans-serif;
+      }
+
+      /* Navbar copied from index.html for consistency */
+      .navbar {
+        background-color: var(--bg-glass);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--border-glass);
+        padding: 1rem 0;
+      }
+      .navbar-brand {
+        font-weight: 700;
+        color: var(--text-light) !important;
+      }
+      .nav-link {
+        color: var(--text-muted) !important;
+        font-weight: 400;
+      }
+      .nav-link:hover,
+      .nav-link.active {
+        color: var(--text-light) !important;
+      }
+      .btn-register {
+        border-color: var(--primary-accent);
+        color: var(--primary-accent);
+        transition: all 0.3s ease;
+      }
+      .btn-register:hover {
+        background-color: var(--primary-accent);
+        color: var(--text-light);
+        box-shadow: 0 0 15px rgba(106, 130, 251, 0.5);
+      }
+      .btn-login {
+        background: linear-gradient(
+          90deg,
+          var(--primary-accent),
+          var(--secondary-accent)
+        );
+        border: none;
+        color: white;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(106, 130, 251, 0.4);
+        color: white;
+      }
+      .btn-gradient {
+        background: linear-gradient(
+          90deg,
+          var(--primary-accent),
+          var(--secondary-accent)
+        );
+        border: none;
+        color: white;
+      }
+
+      /* Search Header */
+      .search-header {
+        padding: 5rem 0;
+        background: linear-gradient(
+            rgba(18, 24, 38, 0.8),
+            rgba(18, 24, 38, 0.8)
+          ),
+          url("https://images.unsplash.com/photo-1481627834876-b7833e8f5570?auto=format&fit=crop&w=1400&q=80");
+        background-size: cover;
+        background-position: center;
+      }
+      .search-header h1 {
+        font-weight: 700;
+      }
+      .search-form .form-control {
+        height: 55px;
+        border-radius: 50px 0 0 50px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border-glass);
+        color: var(--text-light);
+        padding-left: 1.5rem;
+      }
+      .search-form .form-control:focus {
+        background-color: rgba(255, 255, 255, 0.2);
+        border-color: var(--primary-accent);
+        box-shadow: none;
+      }
+      .search-form .btn {
+        border-radius: 0 50px 50px 0;
+        padding: 0 2rem;
+      }
+
+      /* Book Card - Smaller Version */
+      .book-card {
+        background: transparent;
+        border-radius: 8px;
+        overflow: hidden;
+        text-decoration: none;
+        color: var(--text-light);
+        display: block;
+        position: relative;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+      }
+      .book-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+      }
+      .card-img-container {
+        height: 250px;
+        overflow: hidden;
+        border-radius: 8px;
+        background-color: #1a2233;
+      }
+      .card-img-top {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+      }
+      .book-card:hover .card-img-top {
+        transform: scale(1.05);
+      }
+      .card-body {
+        padding: 0.75rem 0.25rem 0;
+      }
+      .card-title {
+        font-weight: 600;
+        font-size: 0.9rem;
+        margin-bottom: 0.1rem;
+        color: var(--text-light);
+      }
+      .card-text {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+      }
+
+      /* Pagination */
+      .pagination .page-link {
+        background-color: transparent;
+        border: 1px solid var(--border-glass);
+        color: var(--text-muted);
+      }
+      .pagination .page-link:hover {
+        background-color: var(--primary-accent);
+        border-color: var(--primary-accent);
+        color: var(--text-light);
+      }
+      .pagination .page-item.active .page-link {
+        background-color: var(--primary-accent);
+        border-color: var(--primary-accent);
+        color: var(--text-light);
+      }
+      .pagination .page-item.disabled .page-link {
+        color: #6c757d;
+        border-color: var(--border-glass);
+      }
+
+      /* Entrance Animations */
+      .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Consistent Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand fs-4" href="{% url 'home' %}"
+          ><i class="fas fa-book-open-reader me-2"></i>BookHub</a
+        >
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <!-- <li class="nav-item">
+              <a class="nav-link" href="{% url 'home' %}">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" href="{% url 'browse_books' %}"
+                >Browse Books</a
+              >
+            </li> -->
+          </ul>
+          <div class="ms-lg-3 mt-3 mt-lg-0">
+            {% if request.session.user_id %}
+            <a href="{% url 'logout' %}" class="btn btn-register">Logout</a>
+            <a
+              href="{% if request.session.user_type == 'member' %}{% url 'userpage' %}{% else %}{% url 'librarian_dashboard' %}{% endif %}"
+              class="btn btn-login"
+              >My Dashboard</a
+            >
+            {% else %}
+            <a style="padding-left: 1.65rem;padding-right: 1.65rem;margin-right: .2rem;" href="{% url 'login' %}" class="btn btn-login">Login</a>
+            <a style="padding-left: 1.65rem;padding-right: 1.65rem;" href="{% url 'register' %}" class="btn btn-register">Register</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <header class="search-header text-center">
+      <div class="container">
+        <div class="fade-in-up">
+          <h1 class="mb-3">Find Your Next Story</h1>
+          <p class="lead text-muted mb-4">
+            Search our extensive collection of books from across the globe.
+          </p>
+          <form
+            action="{% url 'browse_books' %}"
+            method="get"
+            class="search-form row justify-content-center"
+          >
+            <div class="col-lg-7">
+              <div class="input-group">
+                <input
+                  type="text"
+                  name="q"
+                  class="form-control"
+                  placeholder="Search by title, author, or genre..."
+                  value="{{ query }}"
+                />
+                <button class="btn btn-gradient" type="submit">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </header>
+
+    <main class="container py-5">
+      {% if books %}
+      <div
+        class="row row-cols-2 row-cols-md-4 row-cols-lg-6 g-4 fade-in-up"
+        style="animation-delay: 0.2s"
+      >
+        {% for book in books %}
+        <div class="col">
+          <a href="{% url 'book_detail' book.id %}" class="book-card h-100">
+            <div class="card-img-container">
+              <img
+                src="{{ book.image_url }}"
+                class="card-img-top"
+                alt="Cover for {{ book.title }}"
+              />
+            </div>
+            <div class="card-body">
+              <h5 class="card-title text-truncate">{{ book.title }}</h5>
+              <p class="card-text text-truncate">
+                By {{ book.authors|join:", "|default:"Unknown Author" }}
+              </p>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if paginator.num_pages > 1 %}
+      <nav class="mt-5 fade-in-up" style="animation-delay: 0.4s">
+        <ul class="pagination justify-content-center">
+          {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="?q={{ query }}&page={{ page_obj.previous_page_number }}"
+              >«</a
+            >
+          </li>
+          {% else %}
+          <li class="page-item disabled"><span class="page-link">«</span></li>
+          {% endif %} {% for page_num in page_range_display %}
+          <li
+            class="page-item {% if page_obj.number == page_num %}active{% endif %}"
+          >
+            <a class="page-link" href="?q={{ query }}&page={{ page_num }}"
+              >{{ page_num }}</a
+            >
+          </li>
+          {% endfor %} {% if page_obj.has_next %}
+          <li class="page-item">
+            <a
+              class="page-link"
+              href="?q={{ query }}&page={{ page_obj.next_page_number }}"
+              >»</a
+            >
+          </li>
+          {% else %}
+          <li class="page-item disabled"><span class="page-link">»</span></li>
+          {% endif %}
+        </ul>
+      </nav>
+      {% endif %} {% else %}
+      <div class="text-center py-5 fade-in-up">
+        <i class="fas fa-search-minus fa-4x text-muted mb-3"></i>
+        <h3 class="text-light">No Books Found</h3>
+        <p class="text-muted">
+          We couldn't find any books matching "{{ query }}".<br />Please try a
+          different search term.
+        </p>
+      </div>
+      {% endif %}
+    </main>
+
+    <footer class="py-4 mt-auto">
+      <div class="container text-center">
+        <p class="mb-0 text-muted">© 2025 BookHub. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.1/gsap.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        gsap.to(".fade-in-up", {
+          duration: 1,
+          y: 0,
+          opacity: 1,
+          ease: "power3.out",
+          stagger: 0.2,
+        });
+      });
+    </script>
+  </body>
+</html>
