@@ -1,9 +1,8 @@
-Django==5.1.5
-python-dotenv==1.1.1
-razorpay==1.4.2
-Requests==2.32.5
+Django>=4.2,<5.0
 gunicorn
 dj-database-url
 python-decouple
-psycopg2-binary 
-pkg_resources
+psycopg2-binary
+razorpay
+python-dotenv
+
