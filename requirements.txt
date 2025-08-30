@@ -6,3 +6,4 @@ gunicorn
 dj-database-url
 python-decouple
 psycopg2-binary 
+pkg_resources
